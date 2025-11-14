@@ -1,11 +1,32 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import Todo from './components/Todo';
 
 function App() {
 
     const [todos, setTodos] = useState(null);
+    const inputRef = useRef(null);
 
-    function handleSubmit(e) {
+    async function handleSubmit(e) {
         e.preventDefault();
+
+        const todo = {
+            text: inputRef.current.value
+        };
+
+        try {
+            const response = await fetch("http://localhost:8080/todos", {
+                method: "POST",
+                body: JSON.stringify(todo),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+            const newTodo = await response.json();
+            setTodos(prev => [...prev, newTodo]);
+
+        } catch(err) {
+            console.log(err);
+        }
     }
 
     useEffect(() => {
@@ -20,24 +41,19 @@ function App() {
 
     const loaded = () => todos.length > 0 ?
         <ul>
-            {todos.map(t => 
-                <li key={t._id}>
-                    <input type="checkbox" checked={todos.completed} onChange={() => {}} />
-                    {t.text}
-                </li>
-            )}
+            {todos.map(t => <Todo key={t._id} {...t} setTodos={setTodos}/>)}
         </ul> : <p>No Todo Items</p>
 
     return (
         <>
             <h1>Todos</h1>
             <form onSubmit={handleSubmit}>
-                <input type="text" required={true} />
+                <input type="text" required={true} ref={inputRef}/>
                 <button>Submit</button>
             </form>
             {!todos ? <p>Waiting for todos...</p> : loaded()}
         </>
-    )
+    );
 }
 
 export default App
