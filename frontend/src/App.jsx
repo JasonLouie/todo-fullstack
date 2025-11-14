@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import Todo from './components/Todo';
+import { addTodo } from './apicalls';
 
 function App() {
 
@@ -9,22 +10,12 @@ function App() {
     async function handleSubmit(e) {
         e.preventDefault();
 
-        const todo = {
-            text: inputRef.current.value
-        };
-
         try {
-            const response = await fetch("http://localhost:8080/todos", {
-                method: "POST",
-                body: JSON.stringify(todo),
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            });
+            const response = await addTodo({text: inputRef.current.value});
             const newTodo = await response.json();
             setTodos(prev => [...prev, newTodo]);
-
-        } catch(err) {
+            inputRef.current.value = "";
+        } catch (err) {
             console.log(err);
         }
     }
@@ -41,14 +32,14 @@ function App() {
 
     const loaded = () => todos.length > 0 ?
         <ul>
-            {todos.map(t => <Todo key={t._id} {...t} setTodos={setTodos}/>)}
+            {todos.map(t => <Todo key={t._id} {...t} setTodos={setTodos} />)}
         </ul> : <p>No Todo Items</p>
 
     return (
         <>
             <h1>Todos</h1>
             <form onSubmit={handleSubmit}>
-                <input type="text" required={true} ref={inputRef}/>
+                <input type="text" required={true} ref={inputRef} />
                 <button>Submit</button>
             </form>
             {!todos ? <p>Waiting for todos...</p> : loaded()}

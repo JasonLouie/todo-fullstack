@@ -1,4 +1,5 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
+import { deleteTodo, modifyTodo } from "../apicalls";
 
 export default function Todo({ _id, text, completed, setTodos }) {
     const [edit, setEdit] = useState(false);
@@ -6,7 +7,7 @@ export default function Todo({ _id, text, completed, setTodos }) {
 
     async function handleDelete(id) {
         try {
-            await fetch(`http://localhost:8080/todos/${id}`, { method: "DELETE" });
+            await deleteTodo(id);
             setTodos(prev => prev.filter(p => p._id !== id));
         } catch (err) {
             console.log(err);
@@ -15,13 +16,7 @@ export default function Todo({ _id, text, completed, setTodos }) {
 
     async function toggleComplete(id, checked) {
         try {
-            await fetch(`http://localhost:8080/todos/${id}`, {
-                method: "PATCH",
-                body: JSON.stringify({ completed: checked }),
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            });
+            await modifyTodo(id, { completed: checked });
             setTodos(prev => prev.map(p => p._id === id ? {...p, completed: checked} : p));
         } catch (err) {
             console.log(err);
@@ -30,13 +25,7 @@ export default function Todo({ _id, text, completed, setTodos }) {
 
     async function handleModifyText(id) {
         try {
-            await fetch(`http://localhost:8080/todos/${id}`, {
-                method: "PATCH",
-                body: JSON.stringify({ text: todoText }),
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            });
+            await modifyTodo(id, { text: todoText });
             setTodos(prev => prev.map(p => p._id === id ? {...p, text: todoText} : p));
         } catch (err) {
             console.log(err);
