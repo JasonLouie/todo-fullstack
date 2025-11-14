@@ -5,6 +5,6 @@ export default async function connectDB() {
         await mongoose.connect(process.env.ATLAS_URI);
         console.log("Connected to MongoDB");
     } catch (err) {
-        console.log(e);
+        console.log(err);
     }
 }
