@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { deleteTodo, modifyTodo } from "../apicalls";
+import TodoContext from "../context";
 
-export default function Todo({ _id, text, completed, setTodos }) {
+export default function Todo({ _id, text, completed }) {
     const [edit, setEdit] = useState(false);
     const [todoText, setTodoText] = useState(text);
+    const setTodos = useContext(TodoContext);
 
     async function handleDelete(id) {
         try {

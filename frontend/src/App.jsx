@@ -1,24 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
-import Todo from './components/Todo';
-import { addTodo, getAllTodos } from './apicalls';
+import { getAllTodos } from './apicalls';
+import Form from './components/Form';
+import TodoList from './components/TodoList';
+import TodoContext from './context';
 
 export default function App() {
 
     const [todos, setTodos] = useState(null);
     const inputRef = useRef(null);
-
-    async function handleSubmit(e) {
-        e.preventDefault();
-
-        try {
-            const response = await addTodo({text: inputRef.current.value});
-            const newTodo = await response.json();
-            setTodos(prev => [...prev, newTodo]);
-            inputRef.current.value = "";
-        } catch (err) {
-            console.log(err);
-        }
-    }
 
     useEffect(() => {
         async function getTodos() {
@@ -29,19 +18,13 @@ export default function App() {
         getTodos();
     }, []);
 
-    const loaded = () => todos.length > 0 ?
-        <ul>
-            {todos.map(t => <Todo key={t._id} {...t} setTodos={setTodos} />)}
-        </ul> : <p>No Todo Items</p>
-
     return (
         <>
             <h1>Todos</h1>
-            <form onSubmit={handleSubmit}>
-                <input type="text" required={true} ref={inputRef} />
-                <button>Submit</button>
-            </form>
-            {!todos ? <p>Waiting for todos...</p> : loaded()}
+            <TodoContext.Provider value={setTodos}>
+                <Form ref={inputRef} setTodos={setTodos}/>
+                <TodoList setTodos={setTodos} todos={todos} />
+            </TodoContext.Provider>
         </>
     );
 }
