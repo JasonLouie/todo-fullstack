@@ -1,3 +1,4 @@
+export const getAllTodos = async () => await fetch("http://localhost:8080/todos");
 export const addTodo = async (todo) => await fetch("http://localhost:8080/todos", {
     method: "POST",
     body: JSON.stringify(todo),

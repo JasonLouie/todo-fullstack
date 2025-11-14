@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import Todo from './components/Todo';
-import { addTodo } from './apicalls';
+import { addTodo, getAllTodos } from './apicalls';
 
-function App() {
+export default function App() {
 
     const [todos, setTodos] = useState(null);
     const inputRef = useRef(null);
@@ -22,9 +22,8 @@ function App() {
 
     useEffect(() => {
         async function getTodos() {
-            const response = await fetch("http://localhost:8080/todos");
+            const response = await getAllTodos();
             const result = await response.json();
-            console.log(result);
             setTodos(result);
         }
         getTodos();
@@ -46,5 +45,3 @@ function App() {
         </>
     );
 }
-
-export default App
